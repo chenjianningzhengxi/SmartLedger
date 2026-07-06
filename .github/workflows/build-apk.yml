@@ -42,5 +42,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: SmartLedger-v1.0.0-debug
-          path: app/build/outputs/apk/debug/*.apk
-          if-no-files-found: warn
+          path: '**/*.apk'
+          if-no-files-found: error
+
+      - name: List outputs (debug)
+        if: failure()
+        run: find . -name "*.apk" -type f 2>/dev/null || echo "No APK files found"
