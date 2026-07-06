@@ -34,27 +34,27 @@ jobs:
         run: ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log
 
       - name: List Gradle build tasks
-        run: ./gradlew tasks --group build --no-daemon 2>&1 | tail -30
+        run: ./gradlew tasks --all --no-daemon 2>&1 | grep -E '(assemble|package|bundle)' | head -20
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log
+      - name: Build (full)
+        run: |
+          ./gradlew build --no-daemon --stacktrace 2>&1 | tee build.log
+          echo "EXIT_CODE=$?"
 
       - name: Find all build outputs
         run: |
-          echo "=== Searching entire build directory ==="
-          du -sh app/build/
-          find app/build -type f -name "*.apk" -o -name "*.aab" -o -name "*.aar" 2>/dev/null
-          echo "=== outputs/ tree ==="
-          find app/build/outputs -type f 2>/dev/null || echo "no outputs files"
-          echo "=== Checking if outputs/apk exists ==="
+          echo "=== Any .apk/.aab files ==="
+          find app/build -type f \( -name "*.apk" -o -name "*.aab" \) 2>/dev/null
+          echo "=== outputs/ content (recursive) ==="
           ls -laR app/build/outputs/ 2>/dev/null || echo "no outputs"
+          echo "=== build/ size ==="
+          du -sh app/build/ 2>/dev/null
 
-      - name: Upload APK or AAB
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: SmartLedger-v1.0.0-debug
+          name: SmartLedger-debug
           path: |
-            app/build/outputs/**/*.apk
-            app/build/outputs/**/*.aab
-            app/build/**/*.apk
+            app/build/outputs/
+            build.log
           if-no-files-found: warn
