@@ -27,43 +27,34 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Test Gradle wrapper
-        run: ./gradlew --version --no-daemon
-
-      - name: List Gradle tasks (app module)
+      - name: List all available Android tasks
         run: |
-          ./gradlew :app:tasks --all --no-daemon 2>&1 | grep -E '(assemble|package|bundle|compile)' | head -40
-          echo "=== App plugin ==="
-          ./gradlew :app:properties --no-daemon 2>&1 | grep -E 'plugins|android' | head -10
+          ./gradlew :app:tasks --all --no-daemon 2>&1 | grep -iE '(apk|aab|package|assemble|bundle|dex)' > tasks.txt
+          echo "=== Build tasks available ==="
+          cat tasks.txt
 
-      - name: Clean and rebuild
+      - name: Force clean build with rerun
         run: |
-          echo "=== Clean build ==="
-          ./gradlew clean :app:assembleDebug --no-daemon --stacktrace --info 2>&1 | tee build.log
-          echo "=== EXIT: $? ==="
-          echo "=== outputs/ ==="
-          ls -laR app/build/outputs/ 2>/dev/null || echo "no outputs"
-          echo "=== build size ==="
-          du -sh app/build/
-          echo "=== APK search ==="
-          find app/build -name "*.apk" -type f 2>/dev/null
-          find app/build -name "*.aab" -type f 2>/dev/null
+          ./gradlew clean :app:assembleDebug --no-daemon --stacktrace --rerun-tasks 2>&1 | tee gradle_output.txt
+          echo "GRADLE_EXIT=${PIPESTATUS[0]}"
 
-      - name: Debug - check Kotlin compilation
+      - name: Collect all output info
         run: |
-          ./gradlew :app:compileDebugKotlin --no-daemon 2>&1 | tail -5
-          echo "=== DEX intermediates ==="
-          find app/build -path "*/dex/*" -type d 2>/dev/null || echo "No dex dir"
-          echo "=== Kotlin classes ==="
-          find app/build -name "*.class" -type f 2>/dev/null | head -5 || echo "No classes"
+          echo "=== Full build tree ===" > output_info.txt
+          find app/build -type f 2>/dev/null >> output_info.txt
+          echo "=== Size ===" >> output_info.txt
+          du -sh app/build/ 2>/dev/null >> output_info.txt
+          echo "=== APK/AAB search ===" >> output_info.txt
+          find app/build -name "*.apk" -o -name "*.aab" 2>/dev/null >> output_info.txt
+          cat output_info.txt
 
-      - name: Upload APK artifact
+      - name: Upload full build output
         uses: actions/upload-artifact@v4
         with:
-          name: SmartLedger-debug
+          name: build-output
           path: |
-            app/build/outputs/
-            app/build/**/*.apk
-            app/build/**/*.aab
-            build.log
+            gradle_output.txt
+            tasks.txt
+            output_info.txt
+            app/build/
           if-no-files-found: warn
