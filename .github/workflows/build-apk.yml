@@ -27,34 +27,32 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: List all available Android tasks
+      - name: Check package task
         run: |
-          ./gradlew :app:tasks --all --no-daemon 2>&1 | grep -iE '(apk|aab|package|assemble|bundle|dex)' > tasks.txt
-          echo "=== Build tasks available ==="
-          cat tasks.txt
+          echo "=== Tasks matching 'package' ==="
+          ./gradlew :app:tasks --all --no-daemon 2>&1 | grep -i "package" || echo "NO package tasks!"
+          echo "=== Tasks matching 'assemble' ==="
+          ./gradlew :app:tasks --all --no-daemon 2>&1 | grep -i "assemble" || echo "NO assemble tasks!"
 
-      - name: Force clean build with rerun
+      - name: Build
         run: |
-          ./gradlew clean :app:assembleDebug --no-daemon --stacktrace --rerun-tasks 2>&1 | tee gradle_output.txt
-          echo "GRADLE_EXIT=${PIPESTATUS[0]}"
+          ./gradlew clean :app:compileDebugKotlin :app:packageDebug --no-daemon --stacktrace 2>&1 | tail -80
 
-      - name: Collect all output info
+      - name: Find APK
         run: |
-          echo "=== Full build tree ===" > output_info.txt
-          find app/build -type f 2>/dev/null >> output_info.txt
-          echo "=== Size ===" >> output_info.txt
-          du -sh app/build/ 2>/dev/null >> output_info.txt
-          echo "=== APK/AAB search ===" >> output_info.txt
-          find app/build -name "*.apk" -o -name "*.aab" 2>/dev/null >> output_info.txt
-          cat output_info.txt
+          find /home/runner/work -name "*.apk" -type f 2>/dev/null || echo "No APK"
+          find /home/runner/work -name "*.aab" -type f 2>/dev/null || echo "No AAB"
+          echo "=== outputs ==="
+          find app/build/outputs -type f 2>/dev/null | head -20
+          echo "=== build size ==="
+          du -sh app/build/
 
-      - name: Upload full build output
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: build-output
           path: |
-            gradle_output.txt
-            tasks.txt
-            output_info.txt
-            app/build/
+            app/build/outputs/
+            app/build/**/*.apk
+            app/build/**/*.aab
           if-no-files-found: warn
