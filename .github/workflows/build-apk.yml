@@ -3,7 +3,7 @@ name: Build APK
 on:
   push:
     branches: [ "main", "master" ]
-  workflow_dispatch:  # 支持手动触发
+  workflow_dispatch:
 
 jobs:
   build:
@@ -27,17 +27,21 @@ jobs:
             build-tools;35.0.0
             platforms;android-35
 
+      - name: Verify SDK and Java
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "JAVA_HOME=$JAVA_HOME"
+          ls $ANDROID_HOME/platforms/ 2>/dev/null || echo "No platforms"
+          ls $ANDROID_HOME/build-tools/ 2>/dev/null || echo "No build-tools"
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.9"
 
-      - name: Grant execute permission
-        run: chmod +x gradlew
-        continue-on-error: true
-
       - name: Build Debug APK
-        run: gradle assembleDebug
+        run: gradle assembleDebug --no-daemon --stacktrace
+        shell: bash
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
