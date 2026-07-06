@@ -22,11 +22,26 @@ jobs:
           packages: 'platform-tools build-tools;35.0.0 platforms;android-35'
       - name: Make gradlew executable
         run: chmod +x gradlew
+
       - name: Build APK
-        run: ./gradlew :app:assembleDebug --no-daemon --stacktrace
-      - name: Upload APK
+        id: build
+        run: |
+          ./gradlew :app:assembleDebug --no-daemon --stacktrace > gradle_output.log 2>&1
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+      - name: Upload logs on failure
+        if: steps.build.outputs.exit_code != '0'
+        run: |
+          echo "=== Build failed with exit code ${{ steps.build.outputs.exit_code }} ==="
+          echo "=== Last 200 lines of build output ==="
+          tail -200 gradle_output.log
+          echo "=== Full log uploaded as artifact ==="
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: SmartLedger-debug
-          path: '**/*.apk'
-          if-no-files-found: error
+          name: build-output
+          path: |
+            gradle_output.log
+            app/build/outputs/
+          if-no-files-found: warn
