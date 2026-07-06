@@ -36,12 +36,26 @@ jobs:
           echo "=== App plugin ==="
           ./gradlew :app:properties --no-daemon 2>&1 | grep -E 'plugins|android' | head -10
 
-      - name: Build APK (explicit task path)
+      - name: Clean and rebuild
         run: |
-          ./gradlew :app:assembleDebug --no-daemon --stacktrace --info 2>&1 | tee build.log
-          echo "=== EXIT CODE: $? ==="
-          echo "=== Build outputs ==="
-          ls -laR app/build/outputs/ 2>/dev/null || echo "No outputs"
+          echo "=== Clean build ==="
+          ./gradlew clean :app:assembleDebug --no-daemon --stacktrace --info 2>&1 | tee build.log
+          echo "=== EXIT: $? ==="
+          echo "=== outputs/ ==="
+          ls -laR app/build/outputs/ 2>/dev/null || echo "no outputs"
+          echo "=== build size ==="
+          du -sh app/build/
+          echo "=== APK search ==="
+          find app/build -name "*.apk" -type f 2>/dev/null
+          find app/build -name "*.aab" -type f 2>/dev/null
+
+      - name: Debug - check Kotlin compilation
+        run: |
+          ./gradlew :app:compileDebugKotlin --no-daemon 2>&1 | tail -5
+          echo "=== DEX intermediates ==="
+          find app/build -path "*/dex/*" -type d 2>/dev/null || echo "No dex dir"
+          echo "=== Kotlin classes ==="
+          find app/build -name "*.class" -type f 2>/dev/null | head -5 || echo "No classes"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
