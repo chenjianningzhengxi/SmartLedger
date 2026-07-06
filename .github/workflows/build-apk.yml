@@ -35,17 +35,18 @@ jobs:
 
       - name: Find APK
         run: |
-          echo "=== Looking for APK files ==="
-          find . -type f -name "*.apk" 2>/dev/null || echo "No APK found with find"
-          echo "=== Checking build directory ==="
-          ls -la app/build/outputs/ 2>/dev/null || echo "No outputs dir"
-          ls -laR app/build/outputs/apk/ 2>/dev/null || echo "No apk dir"
-          echo "=== Checking intermediates ==="
-          ls -la app/build/intermediates/apk/ 2>/dev/null || echo "No intermediates/apk"
+          echo "=== All .apk files in workspace ==="
+          find $GITHUB_WORKSPACE -name "*.apk" -type f 2>/dev/null || echo "No APK found"
+          echo "=== app/ contents ==="
+          find app -name "*.apk" -type f 2>/dev/null || echo "No APK in app/"
+          echo "=== build directory (top 3 levels) ==="
+          find app/build -maxdepth 3 -type d 2>/dev/null || echo "No build dir"
+          echo "=== Listing app/ ==="
+          ls -la app/
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: SmartLedger-v1.0.0-debug
-          path: 'app/build/outputs/**/*.apk'
+          path: '**/*.apk'
           if-no-files-found: warn
