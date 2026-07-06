@@ -30,31 +30,26 @@ jobs:
       - name: Test Gradle wrapper
         run: ./gradlew --version --no-daemon
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log
-
-      - name: List Gradle build tasks
-        run: ./gradlew tasks --all --no-daemon 2>&1 | grep -E '(assemble|package|bundle)' | head -20
-
-      - name: Build (full)
+      - name: List Gradle tasks (app module)
         run: |
-          ./gradlew build --no-daemon --stacktrace 2>&1 | tee build.log
-          echo "EXIT_CODE=$?"
+          ./gradlew :app:tasks --all --no-daemon 2>&1 | grep -E '(assemble|package|bundle|compile)' | head -40
+          echo "=== App plugin ==="
+          ./gradlew :app:properties --no-daemon 2>&1 | grep -E 'plugins|android' | head -10
 
-      - name: Find all build outputs
+      - name: Build APK (explicit task path)
         run: |
-          echo "=== Any .apk/.aab files ==="
-          find app/build -type f \( -name "*.apk" -o -name "*.aab" \) 2>/dev/null
-          echo "=== outputs/ content (recursive) ==="
-          ls -laR app/build/outputs/ 2>/dev/null || echo "no outputs"
-          echo "=== build/ size ==="
-          du -sh app/build/ 2>/dev/null
+          ./gradlew :app:assembleDebug --no-daemon --stacktrace --info 2>&1 | tee build.log
+          echo "=== EXIT CODE: $? ==="
+          echo "=== Build outputs ==="
+          ls -laR app/build/outputs/ 2>/dev/null || echo "No outputs"
 
-      - name: Upload build artifacts
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: SmartLedger-debug
           path: |
             app/build/outputs/
+            app/build/**/*.apk
+            app/build/**/*.aab
             build.log
           if-no-files-found: warn
