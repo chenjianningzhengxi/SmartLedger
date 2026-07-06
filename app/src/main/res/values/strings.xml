@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">智能极简记账本</string>
+    <string name="app_name_en">Smart Ledger</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_home">流水</string>
+    <string name="nav_add">记账</string>
+    <string name="nav_stats">统计</string>
+
+    <!-- Home Screen -->
+    <string name="home_title">收支流水</string>
+    <string name="home_income">收入</string>
+    <string name="home_expense">支出</string>
+    <string name="home_balance">结余</string>
+    <string name="home_no_records">暂无记录，点击下方按钮开始记账</string>
+    <string name="home_delete_confirm">确定删除这条记录吗？</string>
+    <string name="home_delete_success">删除成功</string>
+    <string name="home_delete_failed">删除失败，请重试</string>
+
+    <!-- Add Transaction Screen -->
+    <string name="add_title">记一笔</string>
+    <string name="add_amount_hint">输入金额</string>
+    <string name="add_note_hint">添加备注（可选）</string>
+    <string name="add_income">收入</string>
+    <string name="add_expense">支出</string>
+    <string name="add_save">保存</string>
+    <string name="add_success">记账成功</string>
+    <string name="add_failed">保存失败，请重试</string>
+    <string name="add_amount_empty">请输入金额</string>
+    <string name="add_amount_invalid">金额格式不正确</string>
+
+    <!-- Stats Screen -->
+    <string name="stats_title">月度统计</string>
+    <string name="stats_total_income">总收入</string>
+    <string name="stats_total_expense">总支出</string>
+    <string name="stats_net_balance">净结余</string>
+    <string name="stats_no_data">暂无本月数据</string>
+
+    <!-- Category -->
+    <string name="category_food">餐饮</string>
+    <string name="category_transport">交通</string>
+    <string name="category_shopping">购物</string>
+    <string name="category_entertainment">娱乐</string>
+    <string name="category_salary">工资</string>
+    <string name="category_other">其他</string>
+    <string name="category_medical">医疗</string>
+    <string name="category_education">教育</string>
+
+    <!-- General -->
+    <string name="confirm">确定</string>
+    <string name="cancel">取消</string>
+    <string name="delete">删除</string>
+    <string name="edit">编辑</string>
+    <string name="error_generic">发生未知错误</string>
+    <string name="loading">加载中…</string>
+</resources>

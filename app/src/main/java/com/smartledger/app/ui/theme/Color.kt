@@ -1,0 +1,53 @@
+package com.smartledger.app.ui.theme
+
+import androidx.compose.ui.graphics.Color
+
+// Light theme colors
+val md_theme_light_primary = Color(0xFF1A6C38)
+val md_theme_light_onPrimary = Color(0xFFFFFFFF)
+val md_theme_light_primaryContainer = Color(0xFFA0F0AE)
+val md_theme_light_onPrimaryContainer = Color(0xFF00210D)
+val md_theme_light_secondary = Color(0xFF506352)
+val md_theme_light_onSecondary = Color(0xFFFFFFFF)
+val md_theme_light_secondaryContainer = Color(0xFFD3E8D3)
+val md_theme_light_onSecondaryContainer = Color(0xFF0E1F13)
+val md_theme_light_tertiary = Color(0xFF3A6570)
+val md_theme_light_onTertiary = Color(0xFFFFFFFF)
+val md_theme_light_tertiaryContainer = Color(0xFFBDECF8)
+val md_theme_light_onTertiaryContainer = Color(0xFF001F25)
+val md_theme_light_error = Color(0xFFBA1A1A)
+val md_theme_light_onError = Color(0xFFFFFFFF)
+val md_theme_light_background = Color(0xFFFBFDF7)
+val md_theme_light_onBackground = Color(0xFF1A1C19)
+val md_theme_light_surface = Color(0xFFFBFDF7)
+val md_theme_light_onSurface = Color(0xFF1A1C19)
+val md_theme_light_surfaceVariant = Color(0xFFDDE5D9)
+val md_theme_light_onSurfaceVariant = Color(0xFF424940)
+val md_theme_light_outline = Color(0xFF72796F)
+
+// Dark theme colors
+val md_theme_dark_primary = Color(0xFF84D494)
+val md_theme_dark_onPrimary = Color(0xFF00391A)
+val md_theme_dark_primaryContainer = Color(0xFF00522A)
+val md_theme_dark_onPrimaryContainer = Color(0xFFA0F0AE)
+val md_theme_dark_secondary = Color(0xFFB7CCB8)
+val md_theme_dark_onSecondary = Color(0xFF233427)
+val md_theme_dark_secondaryContainer = Color(0xFF394B3D)
+val md_theme_dark_onSecondaryContainer = Color(0xFFD3E8D3)
+val md_theme_dark_tertiary = Color(0xFFA1CFDB)
+val md_theme_dark_onTertiary = Color(0xFF00363E)
+val md_theme_dark_tertiaryContainer = Color(0xFF204D58)
+val md_theme_dark_onTertiaryContainer = Color(0xFFBDECF8)
+val md_theme_dark_error = Color(0xFFFFB4AB)
+val md_theme_dark_onError = Color(0xFF690005)
+val md_theme_dark_background = Color(0xFF1A1C19)
+val md_theme_dark_onBackground = Color(0xFFE2E3DD)
+val md_theme_dark_surface = Color(0xFF1A1C19)
+val md_theme_dark_onSurface = Color(0xFFE2E3DD)
+val md_theme_dark_surfaceVariant = Color(0xFF424940)
+val md_theme_dark_onSurfaceVariant = Color(0xFFC2C8BD)
+val md_theme_dark_outline = Color(0xFF8C9388)
+
+// Semantic colors
+val IncomeColor = Color(0xFF2E7D32)
+val ExpenseColor = Color(0xFFC62828)
