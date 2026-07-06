@@ -33,24 +33,28 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log
 
-      - name: Find APK
+      - name: List Gradle build tasks
+        run: ./gradlew tasks --group build --no-daemon 2>&1 | tail -30
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log
+
+      - name: Find all build outputs
         run: |
-          echo "=== All .apk/.aab files ==="
-          find $GITHUB_WORKSPACE \( -name "*.apk" -o -name "*.aab" \) -type f 2>/dev/null || echo "None found"
-          echo "=== outputs/ full tree ==="
-          find app/build/outputs -type f 2>/dev/null || echo "No outputs files"
-          echo "=== build/ top-level dirs ==="
-          ls -la app/build/
-          echo "=== Checking for package task output ==="
-          find app/build -name "*.apk" -o -name "*.aab" 2>/dev/null | head -20 || echo "No APK/AAB in build"
+          echo "=== Searching entire build directory ==="
+          du -sh app/build/
+          find app/build -type f -name "*.apk" -o -name "*.aab" -o -name "*.aar" 2>/dev/null
+          echo "=== outputs/ tree ==="
+          find app/build/outputs -type f 2>/dev/null || echo "no outputs files"
+          echo "=== Checking if outputs/apk exists ==="
+          ls -laR app/build/outputs/ 2>/dev/null || echo "no outputs"
 
-      - name: Package as APK (explicit)
-        if: always()
-        run: ./gradlew packageDebug --no-daemon 2>&1 | tail -5
-
-      - name: Upload APK
+      - name: Upload APK or AAB
         uses: actions/upload-artifact@v4
         with:
           name: SmartLedger-v1.0.0-debug
-          path: '**/*.apk'
+          path: |
+            app/build/outputs/**/*.apk
+            app/build/outputs/**/*.aab
+            app/build/**/*.apk
           if-no-files-found: warn
