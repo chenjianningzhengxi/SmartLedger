@@ -31,20 +31,19 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log
 
-      - name: Upload build log (on failure)
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-log
-          path: build.log
+      - name: Find APK
+        run: |
+          echo "=== Looking for APK files ==="
+          find . -type f -name "*.apk" 2>/dev/null || echo "No APK found with find"
+          echo "=== Checking build directory ==="
+          ls -la app/build/outputs/ 2>/dev/null || echo "No outputs dir"
+          ls -laR app/build/outputs/apk/ 2>/dev/null || echo "No apk dir"
+          echo "=== Checking intermediates ==="
+          ls -la app/build/intermediates/apk/ 2>/dev/null || echo "No intermediates/apk"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: SmartLedger-v1.0.0-debug
-          path: '**/*.apk'
-          if-no-files-found: error
-
-      - name: List outputs (debug)
-        if: failure()
-        run: find . -name "*.apk" -type f 2>/dev/null || echo "No APK files found"
+          path: 'app/build/outputs/**/*.apk'
+          if-no-files-found: warn
