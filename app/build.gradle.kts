@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
 }
@@ -20,9 +21,6 @@ android {
     }
 
     buildTypes {
-        debug {
-            signingConfig = signingConfigs.getByName("debug")
-        }
         release {
             isMinifyEnabled = true
             proguardFiles(
@@ -44,9 +42,28 @@ android {
     buildFeatures {
         compose = true
     }
+}
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
+// Debug: print all variant outputs after build
+afterEvaluate {
+    tasks.matching { it.name.contains("assembleDebug") }.configureEach {
+        doLast {
+            val outputsDir = file("${project.buildDir}/outputs")
+            val apks = fileTree(outputsDir).matching { include("**/*.apk") }
+            if (apks.isEmpty()) {
+                logger.warn("⚠️ No APK found in $outputsDir")
+                fileTree(outputsDir).forEach { f ->
+                    logger.warn("   - ${f.relativeTo(project.buildDir)}")
+                }
+                // Explicitly list all build output directories
+                logger.warn("All directories under build/:")
+                file(project.buildDir).walkTopDown().maxDepth(4).forEach { d ->
+                    if (d.isDirectory) logger.warn("   ${d.relativeTo(project.buildDir)}/")
+                }
+            } else {
+                apks.forEach { logger.lifecycle("✅ APK: ${it.absolutePath}") }
+            }
+        }
     }
 }
 
